@@ -39,21 +39,21 @@ namespace request
             // sampleCreditSale();
             // sampleCreditVoid();
 
-            //  DEBIT
+            //DEBIT
             // sampleCheckCredit();
             // sampleCheckReturn();
             // sampleCheckSale();
             // sampleCheckVerification();
             // sampleCheckVoid();
 
-            //  SERVICES
-            // sampleCreatePlan();
-            // sampleFraudCheck();
-            // samplePaymentAccountCreate();
-            // sampleScheduledTaskDelete();
-            // sampleScheduledTaskUpdate();
-            // samplePaymentAccountUpdate();
-            // sampleUpdatePlan();
+           // SERVICES
+           // sampleCreatePlan();
+           // sampleFraudCheck();
+           // samplePaymentAccountCreate();
+           // sampleScheduledTaskDelete();
+           // sampleScheduledTaskUpdate();
+           // samplePaymentAccountUpdate();
+           // sampleUpdatePlan();
 
         }
 

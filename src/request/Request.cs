@@ -101,21 +101,28 @@ namespace request
                 }
                 catch (WebException e)
                 {
-                    if(e.Response != null)
+                    try
                     {
-                        using (StreamReader streamReader = new StreamReader(e.Response.GetResponseStream()))
+                        if (e.Response != null)
                         {
-                            Console.WriteLine(streamReader.ReadToEnd());
+                            using (StreamReader streamReader = new StreamReader(e.Response.GetResponseStream()))
+                            {
+                                Console.WriteLine(streamReader.ReadToEnd());
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine(e.ToString());
                         }
                     }
-                    else
+                    catch (Exception e1)
                     {
-                        Console.WriteLine(e.ToString());
+                        Console.WriteLine(e1.ToString());
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.Write(e.ToString());
+                    Console.WriteLine(e.ToString());
                 }
                 return null;
             }

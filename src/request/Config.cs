@@ -2,7 +2,8 @@ using System.Net;
 
 namespace request
 {
-    public class Config {
+    public class Config
+    {
 
         public static string license = "";
         public static string baseEndpoint = "apis.cert.vantiv.com";

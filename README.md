@@ -126,98 +126,105 @@ Although the src\Test.cs will handle setting everything for you, we wanted to ca
 ```C#
 public string send()
 {
-    if (Config.doNotSend)
-    {
-        return this.toJSON();
-    }
-    using (WebClient connection = new WebClient())
-    {
-        try
-        {
-            //Concatenate query params
-            string queryParamString = "";
-            if (queryParams.Count != 0)
-            {
-                queryParamString = "?";
-                foreach (string key in queryParams.Keys)
-                {
-                    queryParamString += key + "=" + queryParams[key] + "&";
-                }
-                queryParamString = queryParamString.Substring(0, queryParamString.Length);
-            }
-            //Add query params to url
-            Url url = new Url(this.url + queryParamString);
-            connection.BaseAddress = url.Value;
+	if (Config.doNotSend)
+	{
+		return this.toJSON();
+	}
+	using (WebClient connection = new WebClient())
+	{
+		try
+		{
+			//Concatenate query params
+			string queryParamString = "";
+			if (queryParams.Count != 0)
+			{
+				queryParamString = "?";
+				foreach (string key in queryParams.Keys)
+				{
+					queryParamString += key + "=" + queryParams[key] + "&";
+				}
+				queryParamString = queryParamString.Substring(0, queryParamString.Length);
+			}
+			//Add query params to url
+			Url url = new Url(this.url + queryParamString);
+			connection.BaseAddress = url.Value;
 
-            //Add proxy if needed
-            if (Config.proxy != null)
-            {
-                connection.Proxy = Config.proxy;
-                if (Config.proxyAuth != null)
-                {
-                    connection.Headers.Add("Proxy-Authorization", "Basic " + Config.proxyAuth);
-                }
-            }
+			//Add proxy if needed
+			if (Config.proxy != null)
+			{
+				connection.Proxy = Config.proxy;
+				if (Config.proxyAuth != null)
+				{
+					connection.Headers.Add("Proxy-Authorization", "Basic " + Config.proxyAuth);
+				}
+			}
 
-            //Add Vantiv license header
-            connection.Headers.Add("Authorization", "VANTIV license=\"" + Config.license + "\"");
+			//Add Vantiv license header
+			connection.Headers.Add("Authorization", "VANTIV license=\"" + Config.license + "\"");
 
-            //For all methods but GET
-            if (!method.Equals("GET"))
-            {
-                connection.Headers.Add("Content-Type", "application/json");
+			//For all methods but GET
+			if (!method.Equals("GET"))
+			{
+				connection.Headers.Add("Content-Type", "application/json");
 
-                //Request is this object stringified to JSON
-                string request = this.toJSON();
+				//Request is this object stringified to JSON
+				string request = this.toJSON();
 
-                //Print request if specified in Config.cs
-                if (Config.printRequest)
-                {
-                    Console.WriteLine(request);
-                }
+				//Print request if specified in Config.cs
+				if (Config.printRequest)
+				{
+					Console.WriteLine(request);
+				}
 
-                //Receive Response
-                byte[] jsonOut = Encoding.UTF8.GetBytes(request);
-                string response = Encoding.UTF8.GetString(connection.UploadData(connection.BaseAddress, jsonOut));
+				//Receive Response
+				byte[] jsonOut = Encoding.UTF8.GetBytes(request);
+				string response = Encoding.UTF8.GetString(connection.UploadData(connection.BaseAddress, jsonOut));
 
-                //Print response if specified
-                if (Config.printResponse)
-                {
-                    Console.WriteLine(response);
-                }
+				//Print response if specified
+				if (Config.printResponse)
+				{
+					Console.WriteLine(response);
+				}
 
-                return response;
-            }
+				return response;
+			}
 
-            //For GET requests
-            using (Stream readStream = connection.OpenRead(connection.BaseAddress))
-            {
-                using (StreamReader streamReader = new StreamReader(readStream))
-                {
-                    return streamReader.ReadToEnd();
-                }
-            }
-        }
-        catch (WebException e)
-        {
-            try
-            {
-                using (StreamReader streamReader = new StreamReader(e.Response.GetResponseStream()))
-                {
-                    Console.WriteLine(streamReader.ReadToEnd());
-                }
-            }
-            catch (Exception e1)
-            {
-                Console.WriteLine(e1.ToString());
-            }
-        }
-        catch (Exception e)
-        {
-            Console.Write(e.ToString());
-        }
-        return null;
-    }
+			//For GET requests
+			using (Stream readStream = connection.OpenRead(connection.BaseAddress))
+			{
+				using (StreamReader streamReader = new StreamReader(readStream))
+				{
+					return streamReader.ReadToEnd();
+				}
+			}
+		}
+		catch (WebException e)
+		{
+			try
+			{
+				if (e.Response != null)
+				{
+					using (StreamReader streamReader = new StreamReader(e.Response.GetResponseStream()))
+					{
+						Console.WriteLine(streamReader.ReadToEnd());
+					}
+				}
+				else
+				{
+					Console.WriteLine(e.ToString());
+				}
+			}
+			catch (Exception e1)
+			{
+				Console.WriteLine(e1.ToString());
+			}
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e.ToString());
+		}
+		return null;
+	}
 }
 ```
 
@@ -234,25 +241,20 @@ An example of locating specific meta data in the response can be found by refere
  * @param response must be the response of a transaction
  * @return the transactionID as a String or null if not found
  */
-/**
- * Extracts the transactionID from a response object
- * @param response must be the response of a transaction
- * @return the transactionID as a String or null if not found
- */
 public static string getTransactionID(string response)
 {
-    JObject jObject = toJson(response);
-    if (jObject == null)
-        return null;
-    foreach (JToken desc in jObject.Descendants())
-    {
-        var temp = desc as JProperty;
-        if (temp != null && temp.Name == "TransactionID")
-        {
-            return temp.Value.ToString();
-        }
-    }
-    return null;
+	JObject jObject = toJson(response);
+	if (jObject == null)
+		return null;
+	foreach (JToken desc in jObject.Descendants())
+	{
+		var temp = desc as JProperty;
+		if (temp?.Name == "TransactionID")
+		{
+			return temp.Value?.ToString();
+		}
+	}
+	return null;
 }
 ```
 

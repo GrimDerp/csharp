@@ -33,9 +33,9 @@ namespace request
             foreach (JToken desc in jObject.Descendants())
             {
                 var temp = desc as JProperty;
-                if (temp != null && temp.Name == "TransactionID")
+                if (temp?.Name == "TransactionID")
                 {
-                    return temp.Value.ToString();
+                    return temp.Value?.ToString();
                 }
             }
             return null;
